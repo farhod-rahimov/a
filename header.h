@@ -18,11 +18,8 @@ typedef struct  s
 	
 }               t_s;
 
-void ft_putstr(char *s1, char *s2, int fd);
+void ft_putstr(char *s1, char *s2);
 void ft_error();
 
-// error: cannot execute 
-// error: cd: bad arguments
-// error: cd: cannot change directory to
-
 // /usr/bin/grep
+// /bin/ls

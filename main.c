@@ -5,7 +5,8 @@ t_s *create_new_list(t_s *prev, int i, char **argv)
     int num_of_args;
     t_s *new;
     
-    new = (t_s *)malloc(sizeof(t_s));
+    if ((new = (t_s *)malloc(sizeof(t_s))) == NULL)
+        ft_error();
     new->pipe_flag = 0;
     new->prev = prev;
     new->next = NULL;
@@ -17,7 +18,8 @@ t_s *create_new_list(t_s *prev, int i, char **argv)
         i++;
     }
     new->num_of_args = num_of_args;
-    new->args = (char **)malloc(sizeof(char *) * (num_of_args + 1));
+    if ((new->args = (char **)malloc(sizeof(char *) * (num_of_args + 1))) == NULL)
+        ft_error();
     new->args[num_of_args] = NULL;
 
     if (prev)
@@ -79,9 +81,11 @@ t_s *make_lists(char **argv)
 void ft_cd(t_s *list)
 {
     if (list->num_of_args != 2)
-        ft_putstr("error: cd: bad arguments", NULL, 2);
+        ft_putstr("error: cd: bad arguments", NULL);
     else if (chdir(list->args[1]) == -1)
-        ft_putstr("error: cd: cannot change directory to", list->args[1], 2);
+    {
+        ft_putstr("error: cd: cannot change directory to ", list->args[1]);
+    }
 }
 
 void ft_execve(t_s *list, char **env)
@@ -92,7 +96,7 @@ void ft_execve(t_s *list, char **env)
     if ((child = fork()) == 0)
     {
         if (execve(list->args[0], list->args, env) == -1)
-            ft_putstr("error: cannot execute ", list->args[0], 2);
+            ft_putstr("error: cannot execute ", list->args[0]);
     }
     else if (child == -1)
         ft_error();
@@ -106,28 +110,37 @@ void work_with_lists(t_s *current, char **env)
     int initial_1;
     int fd_pipe[2];
 
-    initial_0 = dup(0);
-    initial_1 = dup(1);
+    if ((initial_0 = dup(0)) == -1)
+        ft_error();
+    if ((initial_1 = dup(1)) == -1)
+        ft_error();
     while (current)
     {
         if (!current->prev && current->pipe_flag)
         {
-            pipe(fd_pipe);
-            dup2(fd_pipe[1], 1);
+            if ((pipe(fd_pipe)) == -1)
+                ft_error();
+            if (dup2(fd_pipe[1], 1) == -1)
+                ft_error();
         }
         else if (current->prev && current->prev->pipe_flag && current->pipe_flag)
         {
-            dup2(fd_pipe[0], 0);
+            if (dup2(fd_pipe[0], 0) == -1)
+                ft_error();
             close(fd_pipe[0]);
             
             close(fd_pipe[1]);
-            pipe(fd_pipe);
-            dup2(fd_pipe[1], 1);
+            if ((pipe(fd_pipe)) == -1)
+                ft_error();
+            if (dup2(fd_pipe[1], 1) == -1)
+                ft_error();
         }
         else if (current->prev && current->prev->pipe_flag && !current->pipe_flag)
         {
-            dup2(fd_pipe[0], 0);
-            dup2(initial_1, 1);
+            if (dup2(fd_pipe[0], 0) == -1)
+                ft_error();
+            if (dup2(initial_1, 1) == -1)
+                ft_error();
             close(fd_pipe[1]);
         }
         if (current->num_of_args)
@@ -139,7 +152,8 @@ void work_with_lists(t_s *current, char **env)
         }
         if (!current->pipe_flag)
         {
-            dup2(initial_0, 0);
+            if (dup2(initial_0, 0) == -1)
+                ft_error();
             close(fd_pipe[0]);
         }
         current = current->next;
@@ -158,7 +172,7 @@ int main(int argc, char **argv, char **env)
     head = make_lists(argv);
     // print_lists(head);
     work_with_lists(head, env);
-    while (1)
-        ;
+    // while (1)
+    //     ;
     return (0);
 }
