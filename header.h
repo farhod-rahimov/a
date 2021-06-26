@@ -24,3 +24,5 @@ void ft_error();
 // error: cannot execute 
 // error: cd: bad arguments
 // error: cd: cannot change directory to
+
+// /usr/bin/grep

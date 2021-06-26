@@ -41,9 +41,8 @@ void get_args(char **argv, t_s *current)
                 current->pipe_flag = 1;
             if (argv[i + 1] == NULL)
                 return ;
-            current = create_new_list(current, i, argv);
+            current = create_new_list(current, ++i, argv);
             k = 0;
-            i++;
         }
         else
             current->args[k++] = argv[i++];
@@ -103,8 +102,34 @@ void ft_execve(t_s *list, char **env)
 
 void work_with_lists(t_s *current, char **env)
 {
+    int initial_0;
+    int initial_1;
+    int fd_pipe[2];
+
+    initial_0 = dup(0);
+    initial_1 = dup(1);
     while (current)
     {
+        if (!current->prev && current->pipe_flag)
+        {
+            pipe(fd_pipe);
+            dup2(fd_pipe[1], 1);
+        }
+        else if (current->prev && current->prev->pipe_flag && current->pipe_flag)
+        {
+            dup2(fd_pipe[0], 0);
+            close(fd_pipe[0]);
+            
+            close(fd_pipe[1]);
+            pipe(fd_pipe);
+            dup2(fd_pipe[1], 1);
+        }
+        else if (current->prev && current->prev->pipe_flag && !current->pipe_flag)
+        {
+            dup2(fd_pipe[0], 0);
+            dup2(initial_1, 1);
+            close(fd_pipe[1]);
+        }
         if (current->num_of_args)
         {
             if (!strcmp(current->args[0], "cd"))
@@ -112,8 +137,15 @@ void work_with_lists(t_s *current, char **env)
             else
                 ft_execve(current, env);
         }
+        if (!current->pipe_flag)
+        {
+            dup2(initial_0, 0);
+            close(fd_pipe[0]);
+        }
         current = current->next;
     }
+    close(initial_0);
+    close(initial_1);
 }
 
 
@@ -126,5 +158,7 @@ int main(int argc, char **argv, char **env)
     head = make_lists(argv);
     // print_lists(head);
     work_with_lists(head, env);
+    while (1)
+        ;
     return (0);
 }
