@@ -23,3 +23,4 @@ void ft_error();
 
 // /usr/bin/grep
 // /bin/ls
+// ls ; ls | grep
