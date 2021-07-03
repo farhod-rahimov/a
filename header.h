@@ -3,7 +3,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <string.h>
-#include <stdio.h>
+// #include <stdio.h>
 
 #define ERROR "error: fatal"
 

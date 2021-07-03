@@ -51,22 +51,22 @@ void get_args(char **argv, t_s *current)
 	}
 }
 
-void print_lists(t_s *head)
-{
-	int i;
+// void print_lists(t_s *head)
+// {
+// 	int i;
 
-	i = 0;
-	while (head)
-	{
-		printf("pipe_flag %d\n", head->pipe_flag);
-		printf("num_of_args %d\n", head->num_of_args);
-		while (head->args[i])
-			printf("%s ", head->args[i++]);
-		i = 0;
-		printf("\n");
-		head = head->next;
-	}
-}
+// 	i = 0;
+// 	while (head)
+// 	{
+// 		printf("pipe_flag %d\n", head->pipe_flag);
+// 		printf("num_of_args %d\n", head->num_of_args);
+// 		while (head->args[i])
+// 			printf("%s ", head->args[i++]);
+// 		i = 0;
+// 		printf("\n");
+// 		head = head->next;
+// 	}
+// }
 
 t_s *make_lists(char **argv)
 {
@@ -179,7 +179,7 @@ int main(int argc, char **argv, char **env)
 	head = make_lists(argv);
 	// print_lists(head);
 	work_with_lists(head, env);
-	while (1)
-	    ;
+	// while (1)
+	//     ;
 	return (0);
 }
